@@ -35,7 +35,7 @@ public class StamoBot extends TelegramLongPollingBot {
         try {
             execute(sm);                        //Actually sending the message
         } catch (TelegramApiException e) {
-            throw new RuntimeException(e);      //Any error will be printed here
+            throw new RuntimeException(e);
         }
     }
 
