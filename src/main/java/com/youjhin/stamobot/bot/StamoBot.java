@@ -28,10 +28,11 @@ public class StamoBot extends TelegramLongPollingBot {
 
     }
 
-    public void sendText(Long who, String what) {
+    public void sendText(Long chatId, String text) {
+
         SendMessage sm = SendMessage.builder()
-                .chatId(who.toString()) //Who are we sending a message to
-                .text(what).build();    //Message content
+                .chatId(chatId.toString()) //Who are we sending a message to
+                .text(text).build();    //Message content
         try {
             execute(sm);                        //Actually sending the message
         } catch (TelegramApiException e) {
