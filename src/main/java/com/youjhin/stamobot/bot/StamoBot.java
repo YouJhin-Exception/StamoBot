@@ -1,6 +1,7 @@
 package com.youjhin.stamobot.bot;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -8,6 +9,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+@Slf4j
 @Component
 public class StamoBot extends TelegramLongPollingBot {
 
@@ -26,6 +28,7 @@ public class StamoBot extends TelegramLongPollingBot {
 
         sendText(id, msg.getText());
 
+        log.info("сообщение отправлено пользователю: " + user); // test logger
     }
 
     public void sendText(Long chatId, String text) {
@@ -33,10 +36,12 @@ public class StamoBot extends TelegramLongPollingBot {
         SendMessage sm = SendMessage.builder()
                 .chatId(chatId.toString()) //Who are we sending a message to
                 .text(text).build();    //Message content
+
+
         try {
             execute(sm);                        //Actually sending the message
         } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
+            log.error("Ошибка отправки сообщения: " + e.getMessage());
         }
     }
 

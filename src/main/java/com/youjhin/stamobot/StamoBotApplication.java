@@ -3,6 +3,7 @@ package com.youjhin.stamobot;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+
 @SpringBootApplication
 public class StamoBotApplication {
 
@@ -11,3 +12,4 @@ public class StamoBotApplication {
     }
 
 }
+
