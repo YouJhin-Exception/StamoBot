@@ -3,12 +3,13 @@ package com.youjhin.stamobot.bot;
 
 import com.youjhin.stamobot.bot.comands.BotCommandsConstants;
 import com.youjhin.stamobot.bot.comands.StamoBotCommands;
+import com.youjhin.stamobot.bot.services.BotServices;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
@@ -20,12 +21,17 @@ import java.util.List;
 @Component
 public class StamoBot extends TelegramLongPollingBot {
 
+    @Autowired
+    private final BotServices botServices;
+
     @Value("${bot.name}")
     private String botName;
 
-    public StamoBot(@Value("${bot.token}") String botToken) {
+    public StamoBot(@Value("${bot.token}") String botToken, BotServices botServices) {
         super(botToken);
         initializeMenu();
+        this.botServices = botServices;
+
     }
 
     @Override
@@ -39,6 +45,10 @@ public class StamoBot extends TelegramLongPollingBot {
 
         switch (msg.getText()) {
             case BotCommandsConstants.START -> {
+
+                //тест регистрации
+                botServices.registerUser(this, update.getMessage());
+
                 // метод приветствия
                 break;
             }
@@ -53,37 +63,13 @@ public class StamoBot extends TelegramLongPollingBot {
                  и различие между новым и кто уже заполняет */
                 break;
             }
-            default -> unknownCommand(msg.getChatId());
+            default -> botServices.unknownCommand(this, msg.getChatId());
         }
 
+        //botServices.sendMessage(this,id, msg.getText()); // echo
 
-        //sendText(id, msg.getText()); // echo
-
-        log.info("сообщение отправлено пользователю: " + user); // test logger
+        log.info("сообщение отправлено пользователю: " + user);
     }
-
-    public void sendMessage(Long chatId, String text) {
-
-        SendMessage sm = SendMessage.builder()
-                .chatId(chatId.toString()) //Who are we sending a message to
-                .text(text).build();    //Message content
-        try {
-            execute(sm);                        //Actually sending the message
-        } catch (TelegramApiException e) {
-            log.error("Ошибка отправки сообщения: " + e.getMessage());
-        }
-    }
-
-    @Override
-    public String getBotUsername() {
-        return botName;
-    }
-
-    private void unknownCommand(Long chatId) {
-        var text = "Не удалось распознать команду!";
-        sendMessage(chatId, text);
-    }
-
 
     // инициализация меню
     private void initializeMenu() {
@@ -93,5 +79,10 @@ public class StamoBot extends TelegramLongPollingBot {
         } catch (TelegramApiException e) {
             log.error("Ошибка создания меню: " + e.getMessage());
         }
+    }
+
+    @Override
+    public String getBotUsername() {
+        return botName;
     }
 }
