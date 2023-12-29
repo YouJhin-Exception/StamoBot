@@ -5,7 +5,7 @@ public final class BotCommandsConstants {
 
     public static final String HELP = "/help";
 
-    public static final String HEADACHE = "/headache";
+    public static final String HEADACHE = "/head";
 
     private BotCommandsConstants() { }
 }

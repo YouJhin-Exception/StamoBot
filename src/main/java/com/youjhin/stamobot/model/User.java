@@ -3,10 +3,14 @@ package com.youjhin.stamobot.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.sql.Timestamp;
 
 
+@Getter
+@Setter
 @Entity(name = "usersDataTable")
 public class User {
 
@@ -21,46 +25,53 @@ public class User {
 
     private Timestamp registeredAt;
 
+    private String lifeLastName;
 
-    public long getChatId() {
-        return chatId;
-    }
+    private String lifeFirstName;
 
-    public void setChatId(long chatId) {
-        this.chatId = chatId;
-    }
+    private int age;
 
-    public String getFirstName() {
-        return firstName;
-    }
+//
+//    public long getChatId() {
+//        return chatId;
+//    }
+//
+//    public void setChatId(long chatId) {
+//        this.chatId = chatId;
+//    }
+//
+//    public String getFirstName() {
+//        return firstName;
+//    }
+//
+//    public void setFirstName(String firstName) {
+//        this.firstName = firstName;
+//    }
+//
+//    public String getLastName() {
+//        return lastName;
+//    }
+//
+//    public void setLastName(String lastName) {
+//        this.lastName = lastName;
+//    }
+//
+//    public String getUserName() {
+//        return userName;
+//    }
+//
+//    public void setUserName(String userName) {
+//        this.userName = userName;
+//    }
+//
+//    public Timestamp getRegisteredAt() {
+//        return registeredAt;
+//    }
+//
+//    public void setRegisteredAt(Timestamp registeredAt) {
+//        this.registeredAt = registeredAt;
+//    }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public Timestamp getRegisteredAt() {
-        return registeredAt;
-    }
-
-    public void setRegisteredAt(Timestamp registeredAt) {
-        this.registeredAt = registeredAt;
-    }
 
     @Override
     public String toString() {
@@ -70,6 +81,9 @@ public class User {
                 ", lastName='" + lastName + '\'' +
                 ", userName='" + userName + '\'' +
                 ", registeredAt=" + registeredAt +
+                ", lifeLastName='" + lifeLastName + '\'' +
+                ", lifeFirstName='" + lifeFirstName + '\'' +
+                ", age=" + age +
                 '}';
     }
 }
