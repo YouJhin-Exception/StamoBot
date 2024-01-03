@@ -30,14 +30,11 @@ public class BotServices {
         sendMessage(bot, message.getChatId(), startMsg);
     }
 
-    public void registerUser(StamoBot bot, Message message) {
+    public void registerUser(StamoBot bot, String firstName, String lastName, String age, Message message) {
 
         if (userRepo.findById(message.getChatId()).isEmpty()) {
-            String realName = "Евгений";
-            String realLastName = "Палевич";
-            int age = 37;
 
-            registerInDb(realName,realLastName,age,message);
+            registerInDb(firstName,lastName,age,message);
 
             String answer = EmojiParser.parseToUnicode("Регистрация прошла успешно! ✅");
 
@@ -79,7 +76,7 @@ public class BotServices {
     }
 
 
-    private void registerInDb(String realName, String realLastName, int age, Message message){
+    private void registerInDb(String realName, String realLastName, String age, Message message){
         var chatId = message.getChatId();
         var chat = message.getChat();
 

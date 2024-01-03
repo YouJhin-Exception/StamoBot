@@ -29,7 +29,7 @@ public class User {
 
     private String lifeFirstName;
 
-    private int age;
+    private String age;
 
 //
 //    public long getChatId() {
