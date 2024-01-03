@@ -11,7 +11,7 @@ public class StamoBotCommands {
     public static List<BotCommand> getCommandList() { // статика чтоб не плодить лишних
         List<BotCommand> commands = new ArrayList<>();
         commands.add(new BotCommand(BotCommandsConstants.START,"приветственное сообщение"));
-        commands.add(new BotCommand(BotCommandsConstants.HELP,"описание бота и команд"));
+        commands.add(new BotCommand(BotCommandsConstants.REG,"регистрация в БД бота"));
         commands.add(new BotCommand(BotCommandsConstants.HEADACHE,"ведение дневника головной боли"));
         return commands;
     }
