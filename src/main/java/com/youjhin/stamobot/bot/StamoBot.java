@@ -10,11 +10,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -42,33 +48,38 @@ public class StamoBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
 
-        var msg = update.getMessage();
-        var user = msg.getFrom();
-        Long chatId = msg.getChatId();
-
         if (update.hasMessage() && update.getMessage().hasText() && !waitAnswer) {
+
+            var msg = update.getMessage();
+            Long chatId = msg.getChatId();
+
             // Обработка обычных сообщений или других команд
             switch (msg.getText()) {
                 case BotCommandsConstants.START -> {
                     // метод приветствия
                     botServices.startCommand(this, msg);
-                    //регистрация пользователя в базе данных
-                    //botServices.registerUser(this, msg);
 
                 }
-
                 case BotCommandsConstants.REG -> {
-
+                    //регистрация пользователя в базе данных
                     botServices.sendMessage(this, chatId, "Введите Ваше имя");
                     waitAnswer = true;
                     regStep = 1;
+                }
+                case BotCommandsConstants.HEADACHE -> {
 
+                    botServices.headacheCommand(this,chatId);
 
                 }
 
                 default -> botServices.unknownCommand(this, msg);
             }
-        } else if (update.hasMessage() && update.getMessage().hasText() && waitAnswer) {
+        }else if (update.hasMessage() && update.getMessage().hasText() && waitAnswer) {
+
+            var msg = update.getMessage();
+            Long chatId = msg.getChatId();
+
+
             if (regStep == 1) {
                 firstName = msg.getText();
                 botServices.sendMessage(this, chatId, "Введите Вашу фамилию");
@@ -87,8 +98,16 @@ public class StamoBot extends TelegramLongPollingBot {
                 waitAnswer = false;
                 regStep = 0;
             }
+        }else if (update.hasCallbackQuery() && !waitAnswer ) {
+
+            String call_data = update.getCallbackQuery().getData();
+            long message_id = update.getCallbackQuery().getMessage().getMessageId();
+            long chat_id = update.getCallbackQuery().getMessage().getChatId();
+
+            botServices.sendMessage(this,chat_id,"Hi");
+
         }
-        log.info("сообщение отправлено пользователю: " + user);
+        //log.info("сообщение отправлено пользователю: " + user);
     }
 
     // инициализация меню

@@ -9,9 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -25,7 +29,8 @@ public class BotServices {
         String startMsg = EmojiParser.parseToUnicode("Здравствуйте, " + message.getChat().getFirstName() + "! \uD83D\uDC4B \n\n" +
                 "Я бот \uD83E\uDD16 помогающий вести дневник головной боли. \n\n" +
                 "Далее этот дневник будет оправляться врачу-цефалгологу для анализа Ваших мигреней.\n" +
-                "Для того чтобы начать ввести Ваш дневник воспользуйтесь командой /head в меню");
+                "Для начала зарегистрируйтесь через команду /reg \n"+
+                "Далее, для того чтобы начать ввести Ваш дневник воспользуйтесь командой /head в меню");
 
         sendMessage(bot, message.getChatId(), startMsg);
     }
@@ -42,37 +47,7 @@ public class BotServices {
 
             log.info("зарегистрированный пользователь: " + message.getChatId());
 
-
         }else sendMessage(bot, message.getChatId(), "Вы уже зарегистрированны");
-
-
-//        if (userRepo.findById(message.getChatId()).isEmpty()) {
-//            var chatId = message.getChatId();
-//            var chat = message.getChat();
-//
-//            //sendMessage(bot, chatId, "Введите ваше имя: ");
-//
-//            //String firstName = (получаем имя с сообщения в чате)
-//
-//            User user = new User();
-//            user.setChatId(chatId);
-//            user.setFirstName(chat.getFirstName());
-//            user.setLastName(chat.getLastName());
-//            user.setUserName(chat.getUserName());
-//            user.setRegisteredAt(new Timestamp(System.currentTimeMillis()));
-//
-//            //user.setLifeFirstName(firstName);
-//
-//            userRepo.save(user);
-//
-//            String answer = EmojiParser.parseToUnicode("Регистрация прошла успешно! ✅");
-//
-//            sendMessage(bot, chatId, answer);
-//
-//            log.info("зарегистрированный пользователь: " + user);
-//        }
-
-
     }
 
 
@@ -105,12 +80,10 @@ public class BotServices {
 
 
     public void sendMessage(StamoBot bot, Long chatId, String text) {
-
         SendMessage sm = SendMessage.builder()
                 .chatId(chatId.toString())
                 .text(text)
                 .build();
-
         try {
             bot.execute(sm);
         } catch (TelegramApiException e) {
@@ -120,9 +93,48 @@ public class BotServices {
     }
 
 
-    public void headacheCommand(StamoBot stamoBot, Message message) {
+    public void headacheCommand(StamoBot bot,Long chatId) {
 
 
+
+
+        InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
+        List<List< InlineKeyboardButton>> rowsInLine = new ArrayList<>();
+        List<InlineKeyboardButton> rowInLine = new ArrayList<>();
+
+        var buttonYes = new InlineKeyboardButton();
+        buttonYes.setText("Yes");
+        buttonYes.setCallbackData("YES");
+
+        var buttonNo = new InlineKeyboardButton();
+        buttonNo.setText("No");
+        buttonNo.setCallbackData("NO");
+
+        var buttonSm = new InlineKeyboardButton();
+        buttonSm.setText("Litle");
+        buttonSm.setCallbackData("Чуть");
+
+        rowInLine.add(buttonYes);
+        rowInLine.add(buttonNo);
+        rowInLine.add(buttonSm);
+
+        rowsInLine.add(rowInLine);
+
+        keyboardMarkup.setKeyboard(rowsInLine);
+
+
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId);
+        message.setText("Болела ли сегодня голова?");
+
+
+        message.setReplyMarkup(keyboardMarkup);
+
+        try {
+            bot.execute(message);
+        } catch (TelegramApiException e) {
+            log.error("Ошибка отправки сообщения: " + e.getMessage());
+        }
     }
 
 
