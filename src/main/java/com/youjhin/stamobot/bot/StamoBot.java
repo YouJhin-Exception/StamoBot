@@ -104,7 +104,16 @@ public class StamoBot extends TelegramLongPollingBot {
             long message_id = update.getCallbackQuery().getMessage().getMessageId();
             long chat_id = update.getCallbackQuery().getMessage().getChatId();
 
-            botServices.sendMessage(this,chat_id,"Hi");
+            //botServices.sendMessage(this,chat_id,"Hi");
+
+            if(call_data.equals("YES")){
+                String text = "You pressed YES button";
+                executeEditMessageText(text, chat_id, message_id);
+            }
+            else if(call_data.equals("NO")){
+                String text = "You pressed NO button";
+                executeEditMessageText(text, chat_id, message_id);
+            }
 
         }
         //log.info("сообщение отправлено пользователю: " + user);
@@ -119,11 +128,26 @@ public class StamoBot extends TelegramLongPollingBot {
             log.error("Ошибка создания меню: " + e.getMessage());
         }
     }
-
     @Override
     public String getBotUsername() {
         return botName;
     }
+
+    private void executeEditMessageText(String text, long chatId, long messageId){
+        EditMessageText message = new EditMessageText();
+        message.setChatId(String.valueOf(chatId));
+        message.setText(text);
+        message.setMessageId((int) messageId);
+
+        try {
+            execute(message);
+        } catch (TelegramApiException e) {
+            log.error(e.getMessage());
+        }
+    }
+
+
+
 
 }
 

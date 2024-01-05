@@ -96,11 +96,8 @@ public class BotServices {
     public void headacheCommand(StamoBot bot,Long chatId) {
 
 
-
-
         InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
-        List<List< InlineKeyboardButton>> rowsInLine = new ArrayList<>();
-        List<InlineKeyboardButton> rowInLine = new ArrayList<>();
+
 
         var buttonYes = new InlineKeyboardButton();
         buttonYes.setText("Yes");
@@ -114,9 +111,15 @@ public class BotServices {
         buttonSm.setText("Litle");
         buttonSm.setCallbackData("Чуть");
 
+        List<InlineKeyboardButton> rowInLine = new ArrayList<>();
+
         rowInLine.add(buttonYes);
         rowInLine.add(buttonNo);
         rowInLine.add(buttonSm);
+
+
+
+        List<List< InlineKeyboardButton>> rowsInLine = new ArrayList<>();
 
         rowsInLine.add(rowInLine);
 
