@@ -2,6 +2,7 @@ package com.youjhin.stamobot.bot.services;
 
 import com.vdurmont.emoji.EmojiParser;
 import com.youjhin.stamobot.bot.StamoBot;
+import com.youjhin.stamobot.bot.questions.QuestionsForDiary;
 import com.youjhin.stamobot.model.User;
 import com.youjhin.stamobot.model.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,9 @@ public class BotServices {
 
     @Autowired
     private UserRepository userRepo;
+
+    @Autowired
+    private QuestionsForDiary questions;
 
 
     public void startCommand(StamoBot bot, Message message) {
@@ -84,59 +88,26 @@ public class BotServices {
                 .chatId(chatId.toString())
                 .text(text)
                 .build();
-        try {
-            bot.execute(sm);
-        } catch (TelegramApiException e) {
-            log.error("Ошибка отправки сообщения: " + e.getMessage());
-        }
-
+        executeMessage(bot,sm);
     }
 
 
     public void headacheCommand(StamoBot bot,Long chatId) {
 
-
-        InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
-
-
-        var buttonYes = new InlineKeyboardButton();
-        buttonYes.setText("Yes");
-        buttonYes.setCallbackData("YES");
-
-        var buttonNo = new InlineKeyboardButton();
-        buttonNo.setText("No");
-        buttonNo.setCallbackData("NO");
-
-        var buttonSm = new InlineKeyboardButton();
-        buttonSm.setText("Litle");
-        buttonSm.setCallbackData("Чуть");
-
-        List<InlineKeyboardButton> rowInLine = new ArrayList<>();
-
-        rowInLine.add(buttonYes);
-        rowInLine.add(buttonNo);
-        rowInLine.add(buttonSm);
+        executeMessage(bot,questions.askQuestionOne(chatId));
 
 
+        executeMessage(bot,questions.askQuestionTwo(chatId));
+        executeMessage(bot,questions.askQuestionThree(chatId));
+        executeMessage(bot,questions.askQuestionFour(chatId));
 
-        List<List< InlineKeyboardButton>> rowsInLine = new ArrayList<>();
+    }
 
-        rowsInLine.add(rowInLine);
-
-        keyboardMarkup.setKeyboard(rowsInLine);
-
-
-        SendMessage message = new SendMessage();
-        message.setChatId(chatId);
-        message.setText("Болела ли сегодня голова?");
-
-
-        message.setReplyMarkup(keyboardMarkup);
-
+    public void executeMessage(StamoBot bot, SendMessage message){
         try {
             bot.execute(message);
         } catch (TelegramApiException e) {
-            log.error("Ошибка отправки сообщения: " + e.getMessage());
+            log.error("ERROR_TEXT " + e.getMessage());
         }
     }
 

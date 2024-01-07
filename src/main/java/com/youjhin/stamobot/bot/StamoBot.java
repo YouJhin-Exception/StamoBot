@@ -3,6 +3,7 @@ package com.youjhin.stamobot.bot;
 
 import com.youjhin.stamobot.bot.comands.BotCommandsConstants;
 import com.youjhin.stamobot.bot.comands.StamoBotCommands;
+import com.youjhin.stamobot.bot.questions.QuestionsForDiary;
 import com.youjhin.stamobot.bot.services.BotServices;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,12 +13,11 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
-import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
@@ -33,8 +33,15 @@ public class StamoBot extends TelegramLongPollingBot {
     private boolean waitAnswer = false;
     private int regStep = 0;
 
+
+
+    private int currenQuestion = 1;
+
     @Autowired
     private BotServices botServices;
+
+    @Autowired
+    private QuestionsForDiary questions;
 
     @Value("${bot.name}")
     private String botName;
@@ -97,27 +104,91 @@ public class StamoBot extends TelegramLongPollingBot {
 
                 waitAnswer = false;
                 regStep = 0;
+
+                firstName = null;
+                lastName = null;
+                age = null;
+
             }
         }else if (update.hasCallbackQuery() && !waitAnswer ) {
 
-            String call_data = update.getCallbackQuery().getData();
-            long message_id = update.getCallbackQuery().getMessage().getMessageId();
-            long chat_id = update.getCallbackQuery().getMessage().getChatId();
 
-            //botServices.sendMessage(this,chat_id,"Hi");
+//            String call_data = update.getCallbackQuery().getData();
+//            long message_id = update.getCallbackQuery().getMessage().getMessageId();
+//            long chat_id = update.getCallbackQuery().getMessage().getChatId();
+//
+//
+//            List<String> answers = new ArrayList<>();
+//            answers.add(call_data);
 
-            if(call_data.equals("YES")){
-                String text = "You pressed YES button";
-                executeEditMessageText(text, chat_id, message_id);
-            }
-            else if(call_data.equals("NO")){
-                String text = "You pressed NO button";
-                executeEditMessageText(text, chat_id, message_id);
-            }
+            CallbackQuery callbackQuery = update.getCallbackQuery();
+            handleCallbackQuery(callbackQuery);
+
+
+
+
+
 
         }
         //log.info("сообщение отправлено пользователю: " + user);
     }
+
+    private void handleCallbackQuery(CallbackQuery callbackQuery) {
+
+        Long chatId = callbackQuery.getMessage().getChatId();
+
+        // ответы тут по нажатию
+        String callbackData = callbackQuery.getData();
+
+        switch (currenQuestion){
+            case 1:
+                currenQuestion++;
+                sendNextQuestion(chatId,callbackQuery.getMessage().getMessageId());
+                break;
+            case 2:
+                currenQuestion++;
+                sendNextQuestion(chatId,callbackQuery.getMessage().getMessageId());
+                break;
+        }
+
+    }
+
+    private void sendNextQuestion(Long chatId, Integer messageId) {
+        EditMessageText editMessageText;
+        switch (currenQuestion){
+            case 2:
+                editMessageText = editQuestion(chatId,messageId,questions.askQuestionTwo(chatId));
+                break;
+            case 3:
+                editMessageText = editQuestion(chatId,messageId,questions.askQuestionThree(chatId));
+                break;
+            default:
+                editMessageText = new EditMessageText();
+                editMessageText.setChatId(chatId);
+                editMessageText.setMessageId(messageId);
+                editMessageText.setText("Опрос завершен.");
+                break;
+        }
+
+        try {
+            execute(editMessageText);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private EditMessageText editQuestion(Long chatId, Integer messageId, SendMessage originalMessage) {
+        EditMessageText editMessageText = new EditMessageText();
+        editMessageText.setChatId(chatId);
+        editMessageText.setMessageId(messageId);
+        editMessageText.setText(originalMessage.getText());
+        editMessageText.setReplyMarkup((InlineKeyboardMarkup) originalMessage.getReplyMarkup());
+        return editMessageText;
+    }
+
+
+
 
     // инициализация меню
     private void initializeMenu() {
@@ -145,8 +216,6 @@ public class StamoBot extends TelegramLongPollingBot {
             log.error(e.getMessage());
         }
     }
-
-
 
 
 }
