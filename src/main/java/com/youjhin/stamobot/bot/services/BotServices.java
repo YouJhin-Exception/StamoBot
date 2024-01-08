@@ -94,12 +94,7 @@ public class BotServices {
 
     public void headacheCommand(StamoBot bot,Long chatId) {
 
-        executeMessage(bot,questions.askQuestionOne(chatId));
-
-
-        executeMessage(bot,questions.askQuestionTwo(chatId));
-        executeMessage(bot,questions.askQuestionThree(chatId));
-        executeMessage(bot,questions.askQuestionFour(chatId));
+        executeMessage(bot,questions.askQuestionByNumber(chatId,1));
 
     }
 
