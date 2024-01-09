@@ -11,6 +11,9 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class HandleQuery {
 
@@ -18,12 +21,16 @@ public class HandleQuery {
     private QuestionsForDiary questions;
     private int currentQuestion = 1;
 
+    List<String> answers = new ArrayList<>();
+
     public void handleCallbackQuery(StamoBot bot, CallbackQuery callbackQuery) {
+
+        // ответы тут по нажатию
+        String callbackData = callbackQuery.getData();
+        answers.add(callbackData);
 
         Long chatId = callbackQuery.getMessage().getChatId();
         sendNextQuestion(bot,chatId,callbackQuery.getMessage().getMessageId());
-        // ответы тут по нажатию
-        String callbackData = callbackQuery.getData();
 
     }
 
@@ -41,6 +48,10 @@ public class HandleQuery {
                 editMessageText.setMessageId(messageId);
                 editMessageText.setText("Опрос завершен. \uD83D\uDE31");
                 currentQuestion = 1;
+
+
+                System.out.println(answers.toString());
+                answers.clear();
                 break;
         }
         try {

@@ -3,7 +3,6 @@ package com.youjhin.stamobot.bot;
 
 import com.youjhin.stamobot.bot.comands.BotCommandsConstants;
 import com.youjhin.stamobot.bot.comands.StamoBotCommands;
-import com.youjhin.stamobot.bot.questions.QuestionsForDiary;
 import com.youjhin.stamobot.bot.services.BotServices;
 import com.youjhin.stamobot.bot.services.HandleQuery;
 import lombok.extern.slf4j.Slf4j;
@@ -12,17 +11,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
-import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -34,6 +27,7 @@ public class StamoBot extends TelegramLongPollingBot {
     private String age;
     private boolean waitAnswer = false;
     private int regStep = 0;
+
 
     @Autowired
     private BotServices botServices;
@@ -93,10 +87,6 @@ public class StamoBot extends TelegramLongPollingBot {
         }
 
         } else if (update.hasCallbackQuery()&& !waitAnswer) {
-
-//            String call_data = update.getCallbackQuery().getData();
-//            List<String> answers = new ArrayList<>();
-//            answers.add(call_data);
 
             handleQuery.handleCallbackQuery(this,update.getCallbackQuery());
         }
