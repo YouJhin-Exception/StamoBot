@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -72,6 +74,10 @@ public class BotServices {
         userRepo.save(user);
     }
 
+    public void headacheCommand(StamoBot bot,Long chatId) {
+        executeMessage(bot,questions.askQuestionByNumber(chatId,1));
+    }
+
     public void unknownCommand(StamoBot bot, Message message) {
         String answer = EmojiParser.parseToUnicode("Не удалось распознать команду! :skull:");
         String an2 = EmojiParser.parseToUnicode(":space_invader:");
@@ -92,11 +98,6 @@ public class BotServices {
     }
 
 
-    public void headacheCommand(StamoBot bot,Long chatId) {
-
-        executeMessage(bot,questions.askQuestionByNumber(chatId,1));
-
-    }
 
     public void executeMessage(StamoBot bot, SendMessage message){
         try {
@@ -105,8 +106,6 @@ public class BotServices {
             log.error("ERROR_TEXT " + e.getMessage());
         }
     }
-
-
 }
 
 

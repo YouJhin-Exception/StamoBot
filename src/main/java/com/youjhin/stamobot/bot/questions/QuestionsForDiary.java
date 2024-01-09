@@ -113,134 +113,13 @@ public class QuestionsForDiary {
                         )
 
                 );
-                return createSendMessageWithKeyboard(chatId, "Имеются ли у Вас какие-либо симптомы?", keyboardMarkup);
+                return createSendMessageWithKeyboard(chatId, "Есть ли профилактика приступов головной боли?", keyboardMarkup);
 
             default:
-                // В случае неизвестного номера вопроса возвращаем пустое сообщение
-                return null; // ПЕРЕДЕЛАТЬ!!
+                // В случае неизвестного номера вопроса возвращаем пустоту (может переделать на пустое сообщение ?)
+                return null;
         }
     }
-
-
-    public SendMessage askQuestionOne(Long chatId) {
-
-        InlineKeyboardMarkup keyboardMarkup = createKeyboard(
-                createRow(
-                        createButton("1", "1"),
-                        createButton("2", "2"),
-                        createButton("3", "3"),
-                        createButton("4", "4"),
-                        createButton("5", "5")
-                )
-        );
-        return createSendMessageWithKeyboard(chatId, "Как сильно болела голова, по шкале от 1 до 5?", keyboardMarkup);
-    }
-
-//    public SendMessage askQuestionTwo(Long chatId) {
-//
-//        InlineKeyboardMarkup keyboardMarkup = createKeyboard(
-//                createRow(
-//                        createButton("Пульсирует", "Пульсирует"),
-//                        createButton("Сжимает", "Сжимает"),
-//                        createButton("Давит", "Давит")
-//                ),
-//                createRow(
-//                        createButton("Стреляет", "Стреляет"),
-//                        createButton("Распирает", "Распирает"),
-//                        createButton("Сверлит", "Сверлит")
-//                )
-//        );
-//        return createSendMessageWithKeyboard(chatId, "Характер головной боли?", keyboardMarkup);
-//    }
-//
-//    public SendMessage askQuestionThree(Long chatId) {
-//
-//        InlineKeyboardMarkup keyboardMarkup = createKeyboard(
-//                createRow(
-//                        createButton("Лобная", "Лобная"),
-//                        createButton("Височная", "Височная")
-//                ),
-//                createRow(
-//                        createButton("Теменная", "Теменная"),
-//                        createButton("Затылочная", "Затылочная")
-//                )
-//        );
-//
-//        return createSendMessageWithKeyboard(chatId, "В какой области болит?", keyboardMarkup);
-//    }
-//    public SendMessage askQuestionFour(Long chatId) {
-//
-//        InlineKeyboardMarkup keyboardMarkup = createKeyboard(
-//                createRow(
-//                        createButton("Слева", "Слева"),
-//                        createButton("Справа", "Справа")
-//                ),
-//                createRow(
-//                        createButton("С 2х сторон", "С 2х сторон")
-//                )
-//        );
-//
-//        return createSendMessageWithKeyboard(chatId, "С какой стороны болит голова?", keyboardMarkup);
-//    }
-//    public SendMessage askQuestionFive(Long chatId) {
-//
-//        InlineKeyboardMarkup keyboardMarkup = createKeyboard(
-//                createRow(
-//                        createButton("Тошнота или рвота", "Тошнота или рвота")
-//                ),
-//                createRow(
-//                        createButton("Раздражает свет/звук", "Раздражает свет/звук")
-//                ),
-//                createRow(
-//                        createButton("Онемение", "Онемение")
-//                ),
-//                createRow(
-//                        createButton("Усиливается при физ.активности", "Усиливается при физ.активности")
-//                )
-//
-//        );
-//        return createSendMessageWithKeyboard(chatId, "Имеются ли у Вас какие-либо симптомы?", keyboardMarkup);
-//    }
-//
-//    public SendMessage askQuestionSix(Long chatId) {
-//
-//        InlineKeyboardMarkup keyboardMarkup = createKeyboard(
-//                createRow(
-//                        createButton("Терплю (сон, отдых, прогулка)", "Терплю (сон, отдых, прогулка)")
-//                ),
-//                createRow(
-//                        createButton("Лекарствами", "Лекарствами")
-//                )
-//
-//        );
-//        return createSendMessageWithKeyboard(chatId, "Чем снимаете приступ?", keyboardMarkup);
-//
-//    }
-//
-//    public SendMessage askQuestionSeven(Long chatId) {
-//
-//        InlineKeyboardMarkup keyboardMarkup = createKeyboard(
-//                createRow(
-//                        createButton("Моноклональные антитела", "Моноклональные антитела")
-//                ),
-//                createRow(
-//                        createButton("Cefaly", "Cefaly"),
-//                        createButton("БОС", "БОС"),
-//                        createButton("Массаж", "Массаж")
-//                ),
-//                createRow(
-//                        createButton("Сон", "Сон"),
-//                        createButton("Гимнастика", "Гимнастика"),
-//                        createButton("Прогулки", "Прогулки")
-//                ),
-//                createRow(
-//                        createButton("Нет", "Нет")
-//                )
-//
-//        );
-//        return createSendMessageWithKeyboard(chatId, "Имеются ли у Вас какие-либо симптомы?", keyboardMarkup);
-//
-//    }
 
     private InlineKeyboardButton createButton(String text, String callbackData) {
         InlineKeyboardButton button = new InlineKeyboardButton();
@@ -253,6 +132,7 @@ public class QuestionsForDiary {
         return Arrays.asList(buttons);
     }
 
+    @SafeVarargs // from idea
     private InlineKeyboardMarkup createKeyboard(List<InlineKeyboardButton>... rows) {
         InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
         keyboardMarkup.setKeyboard(Arrays.asList(rows));

@@ -1,0 +1,61 @@
+package com.youjhin.stamobot.bot.services;
+
+
+import com.youjhin.stamobot.bot.StamoBot;
+import com.youjhin.stamobot.bot.questions.QuestionsForDiary;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+@Service
+public class HandleQuery {
+
+    @Autowired
+    private QuestionsForDiary questions;
+    private int currentQuestion = 1;
+
+    public void handleCallbackQuery(StamoBot bot, CallbackQuery callbackQuery) {
+
+        Long chatId = callbackQuery.getMessage().getChatId();
+        sendNextQuestion(bot,chatId,callbackQuery.getMessage().getMessageId());
+        // ответы тут по нажатию
+        String callbackData = callbackQuery.getData();
+
+    }
+
+    private void sendNextQuestion(StamoBot bot, Long chatId, Integer messageId) {
+
+        EditMessageText editMessageText;
+        switch (currentQuestion){
+            case 1,2,3,4,5,6:
+                currentQuestion++;
+                editMessageText = editQuestion(chatId,messageId,questions.askQuestionByNumber(chatId, currentQuestion));
+                break;
+            default:
+                editMessageText = new EditMessageText();
+                editMessageText.setChatId(chatId);
+                editMessageText.setMessageId(messageId);
+                editMessageText.setText("Опрос завершен. \uD83D\uDE31");
+                currentQuestion = 1;
+                break;
+        }
+        try {
+            bot.execute(editMessageText);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+    private EditMessageText editQuestion(Long chatId, Integer messageId, SendMessage originalMessage) {
+        EditMessageText editMessageText = new EditMessageText();
+        editMessageText.setChatId(chatId);
+        editMessageText.setMessageId(messageId);
+        editMessageText.setText(originalMessage.getText());
+        editMessageText.setReplyMarkup((InlineKeyboardMarkup) originalMessage.getReplyMarkup());
+        return editMessageText;
+    }
+
+}
