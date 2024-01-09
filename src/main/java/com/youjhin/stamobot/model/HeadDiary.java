@@ -2,6 +2,8 @@ package com.youjhin.stamobot.model;
 
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,6 +16,9 @@ import java.sql.Timestamp;
 public class HeadDiary {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long diaryId;
+
     private long chatId;
 
     private Timestamp dateOfFilling;

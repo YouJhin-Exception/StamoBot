@@ -3,6 +3,8 @@ package com.youjhin.stamobot.bot.services;
 
 import com.youjhin.stamobot.bot.StamoBot;
 import com.youjhin.stamobot.bot.questions.QuestionsForDiary;
+import com.youjhin.stamobot.model.HeadDiary;
+import com.youjhin.stamobot.model.HeadDiaryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -11,11 +13,15 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class HandleQuery {
+
+    @Autowired
+    private HeadDiaryRepository diaryRepo;
 
     @Autowired
     private QuestionsForDiary questions;
@@ -50,6 +56,9 @@ public class HandleQuery {
                 currentQuestion = 1;
 
 
+                saveSurvey(chatId);
+
+
                 System.out.println(answers.toString());
                 answers.clear();
                 break;
@@ -67,6 +76,19 @@ public class HandleQuery {
         editMessageText.setText(originalMessage.getText());
         editMessageText.setReplyMarkup((InlineKeyboardMarkup) originalMessage.getReplyMarkup());
         return editMessageText;
+    }
+
+    private void saveSurvey(Long chatId){
+
+        HeadDiary diary = new HeadDiary();
+
+        diary.setChatId(chatId);
+        diary.setDateOfFilling(new Timestamp(System.currentTimeMillis()));
+
+        diaryRepo.save(diary);
+
+
+
     }
 
 }
