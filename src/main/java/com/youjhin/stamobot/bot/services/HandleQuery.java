@@ -1,6 +1,5 @@
 package com.youjhin.stamobot.bot.services;
 
-
 import com.youjhin.stamobot.bot.StamoBot;
 import com.youjhin.stamobot.bot.questions.QuestionsForDiary;
 import com.youjhin.stamobot.model.HeadDiary;
@@ -17,6 +16,9 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Сервисный класс для обработки запросов, связанных с опросом.
+ */
 @Service
 public class HandleQuery {
 
@@ -26,49 +28,66 @@ public class HandleQuery {
     @Autowired
     private QuestionsForDiary questions;
     private int currentQuestion = 1;
-
     List<String> answers = new ArrayList<>();
 
+    /**
+     * Обрабатывает callback-запрос, полученный от пользователя.
+     *
+     * @param bot           Экземпляр бота Telegram.
+     * @param callbackQuery Полученный callback-запрос.
+     */
     public void handleCallbackQuery(StamoBot bot, CallbackQuery callbackQuery) {
 
-        // ответы тут по нажатию
+        // Ответы собираются при нажатии кнопок
         String callbackData = callbackQuery.getData();
         answers.add(callbackData);
 
         Long chatId = callbackQuery.getMessage().getChatId();
-        sendNextQuestion(bot,chatId,callbackQuery.getMessage().getMessageId());
-
+        sendNextQuestion(bot, chatId, callbackQuery.getMessage().getMessageId());
     }
 
+    /**
+     * Отправляет следующий вопрос опроса в зависимости от номера текущего вопроса.
+     *
+     * @param bot       Экземпляр бота Telegram.
+     * @param chatId    Идентификатор чата.
+     * @param messageId Идентификатор сообщения.
+     */
     private void sendNextQuestion(StamoBot bot, Long chatId, Integer messageId) {
-
         EditMessageText editMessageText;
-        switch (currentQuestion){
-            case 1,2,3,4,5,6:
-                currentQuestion++;
-                editMessageText = editQuestion(chatId,messageId,questions.askQuestionByNumber(chatId, currentQuestion));
-                break;
-            default:
-                editMessageText = new EditMessageText();
-                editMessageText.setChatId(chatId);
-                editMessageText.setMessageId(messageId);
-                editMessageText.setText("Опрос завершен. \uD83D\uDE31");
-                currentQuestion = 1;
 
+        if (currentQuestion >= 1 && currentQuestion <= 7) {
+            // Переход к следующему вопросу и редактирование сообщения
+            currentQuestion++;
+            editMessageText = editQuestion(chatId, messageId, questions.askQuestionByNumber(chatId, currentQuestion));
+        } else {
+            // Опрос завершен, отправка сообщения об окончании, сохранение опроса и сброс переменных
+            editMessageText = new EditMessageText();
+            editMessageText.setChatId(chatId);
+            editMessageText.setMessageId(messageId);
+            editMessageText.setText("Опрос завершен. \uD83D\uDE31");
+            currentQuestion = 1;
 
-                saveSurvey(chatId);
+            saveSurvey(chatId);
 
-
-                System.out.println(answers.toString());
-                answers.clear();
-                break;
+            answers.clear();
         }
+
         try {
             bot.execute(editMessageText);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Редактирует сообщение с вопросом с обновленным содержанием.
+     *
+     * @param chatId          Идентификатор чата.
+     * @param messageId       Идентификатор сообщения.
+     * @param originalMessage Оригинальное сообщение для редактирования.
+     * @return Отредактированное сообщение.
+     */
     private EditMessageText editQuestion(Long chatId, Integer messageId, SendMessage originalMessage) {
         EditMessageText editMessageText = new EditMessageText();
         editMessageText.setChatId(chatId);
@@ -78,17 +97,26 @@ public class HandleQuery {
         return editMessageText;
     }
 
-    private void saveSurvey(Long chatId){
+    /**
+     * Сохраняет собранные данные опроса в базу данных.
+     *
+     * @param chatId Идентификатор чата.
+     */
+    private void saveSurvey(Long chatId) {
 
         HeadDiary diary = new HeadDiary();
 
         diary.setChatId(chatId);
         diary.setDateOfFilling(new Timestamp(System.currentTimeMillis()));
+        diary.setHowMuchHurtScale(answers.getFirst());
+        diary.setNatureHeadache(answers.get(1));
+        diary.setAreaHurt(answers.get(2));
+        diary.setWerePain(answers.get(3));
+        diary.setSymptoms(answers.get(4));
+        diary.setRelieveAttack(answers.get(5));
+        diary.setPreventionHeadache(answers.get(6));
+        diary.setTakeMedication(answers.get(7));
 
         diaryRepo.save(diary);
-
-
-
     }
-
 }

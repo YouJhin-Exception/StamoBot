@@ -114,6 +114,26 @@ public class QuestionsForDiary {
 
                 );
                 return createSendMessageWithKeyboard(chatId, "Есть ли профилактика приступов головной боли?", keyboardMarkup);
+            case 8:
+                keyboardMarkup = createKeyboard(
+                        createRow(
+                                createButton("Метопролол (беталок, эгилок)", "Метопролол (беталок, эгилок)")
+                        ),
+                        createRow(
+                                createButton("Амитриптилин", "Амитриптилин"),
+                                createButton("Венлафиксин", "Венлафиксин")
+
+                        ),
+                        createRow(
+                                createButton("Топирамат", "Топирамат"),
+                                createButton("Кандесартан", "Кандесартан")
+                        ),
+                        createRow(
+                                createButton("Нет", "Нет")
+                        )
+
+                );
+                return createSendMessageWithKeyboard(chatId, "Принимаете ли Вы один из следующих препаратов?", keyboardMarkup);
 
             default:
                 // В случае неизвестного номера вопроса возвращаем пустоту (может переделать на пустое сообщение ?)
@@ -132,7 +152,7 @@ public class QuestionsForDiary {
         return Arrays.asList(buttons);
     }
 
-    @SafeVarargs // from idea
+    @SafeVarargs
     private InlineKeyboardMarkup createKeyboard(List<InlineKeyboardButton>... rows) {
         InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
         keyboardMarkup.setKeyboard(Arrays.asList(rows));

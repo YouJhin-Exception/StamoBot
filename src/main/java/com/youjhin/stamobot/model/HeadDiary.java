@@ -37,4 +37,6 @@ public class HeadDiary {
 
     private String preventionHeadache;
 
+    private String takeMedication;
+
 }
