@@ -1,4 +1,4 @@
-package com.youjhin.stamobot.model;
+package com.youjhin.stamobot.bot.model;
 
 
 import org.springframework.data.repository.CrudRepository;

@@ -2,8 +2,8 @@ package com.youjhin.stamobot.bot.services;
 
 import com.youjhin.stamobot.bot.StamoBot;
 import com.youjhin.stamobot.bot.questions.QuestionsForDiary;
-import com.youjhin.stamobot.model.HeadDiary;
-import com.youjhin.stamobot.model.HeadDiaryRepository;
+import com.youjhin.stamobot.bot.model.HeadDiary;
+import com.youjhin.stamobot.bot.model.HeadDiaryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;

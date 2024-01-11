@@ -8,9 +8,18 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import java.util.Arrays;
 import java.util.List;
 
-
+/**
+ * Сервис для формирования вопросов для дневника головной боли и создания сообщений с клавиатурой.
+ */
 @Service
 public class QuestionsForDiary {
+    /**
+     * Генерирует вопрос с клавиатурой по номеру вопроса.
+     *
+     * @param chatId         Идентификатор чата пользователя.
+     * @param questionNumber Номер вопроса.
+     * @return Сообщение с клавиатурой для ответа на вопрос.
+     */
     public SendMessage askQuestionByNumber(Long chatId, int questionNumber) {
         InlineKeyboardMarkup keyboardMarkup;
 
@@ -140,7 +149,13 @@ public class QuestionsForDiary {
                 return null;
         }
     }
-
+    /**
+     * Создает кнопку для использования в клавиатуре.
+     *
+     * @param text         Текст на кнопке.
+     * @param callbackData Данные, которые будут переданы при нажатии на кнопку.
+     * @return Созданная кнопка.
+     */
     private InlineKeyboardButton createButton(String text, String callbackData) {
         InlineKeyboardButton button = new InlineKeyboardButton();
         button.setText(text);
@@ -148,10 +163,22 @@ public class QuestionsForDiary {
         return button;
     }
 
+    /**
+     * Создает строку кнопок для использования в клавиатуре.
+     *
+     * @param buttons Массив кнопок.
+     * @return Список кнопок в одной строке.
+     */
     private List<InlineKeyboardButton> createRow(InlineKeyboardButton... buttons) {
         return Arrays.asList(buttons);
     }
 
+    /**
+     * Создает клавиатуру из строк кнопок.
+     *
+     * @param rows Массив строк кнопок.
+     * @return Созданная клавиатура.
+     */
     @SafeVarargs
     private InlineKeyboardMarkup createKeyboard(List<InlineKeyboardButton>... rows) {
         InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
@@ -159,6 +186,14 @@ public class QuestionsForDiary {
         return keyboardMarkup;
     }
 
+    /**
+     * Создает сообщение с клавиатурой для отправки пользователю.
+     *
+     * @param chatId  Идентификатор чата пользователя.
+     * @param text    Текст сообщения.
+     * @param keyboard Клавиатура, прикрепленная к сообщению.
+     * @return Созданное сообщение с клавиатурой.
+     */
     private SendMessage createSendMessageWithKeyboard(Long chatId, String text, InlineKeyboardMarkup keyboard) {
         SendMessage message = new SendMessage();
         message.setChatId(chatId);

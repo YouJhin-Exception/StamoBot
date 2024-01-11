@@ -1,4 +1,4 @@
-package com.youjhin.stamobot.model;
+package com.youjhin.stamobot.bot.model;
 
 
 import jakarta.persistence.Entity;
@@ -8,7 +8,9 @@ import lombok.Setter;
 
 import java.sql.Timestamp;
 
-
+/**
+ * Сущность, представляющая данные пользователя в системе дневника головной боли.
+ */
 @Getter
 @Setter
 @Entity(name = "usersDataTable")
