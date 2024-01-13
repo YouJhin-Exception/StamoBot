@@ -23,8 +23,8 @@ public class QuestionsForDiary {
     public SendMessage askQuestionByNumber(Long chatId, int questionNumber) {
         InlineKeyboardMarkup keyboardMarkup;
 
-        switch (questionNumber) {
-            case 1:
+        return switch (questionNumber) {
+            case 1 -> {
                 keyboardMarkup = createKeyboard(
                         createRow(
                                 createButton("1", "1"),
@@ -34,9 +34,9 @@ public class QuestionsForDiary {
                                 createButton("5", "5")
                         )
                 );
-                return createSendMessageWithKeyboard(chatId, "Как сильно болела голова, по шкале от 1 до 5?", keyboardMarkup);
-
-            case 2:
+                yield createSendMessageWithKeyboard(chatId, "Как сильно болела голова, по шкале от 1 до 5?", keyboardMarkup);
+            }
+            case 2 -> {
                 keyboardMarkup = createKeyboard(
                         createRow(
                                 createButton("Пульсирует", "Пульсирует"),
@@ -49,9 +49,9 @@ public class QuestionsForDiary {
                                 createButton("Сверлит", "Сверлит")
                         )
                 );
-                return createSendMessageWithKeyboard(chatId, "Характер головной боли?", keyboardMarkup);
-
-            case 3:
+                yield createSendMessageWithKeyboard(chatId, "Характер головной боли?", keyboardMarkup);
+            }
+            case 3 -> {
                 keyboardMarkup = createKeyboard(
                         createRow(
                                 createButton("Лобная", "Лобная"),
@@ -62,8 +62,9 @@ public class QuestionsForDiary {
                                 createButton("Затылочная", "Затылочная")
                         )
                 );
-                return createSendMessageWithKeyboard(chatId, "В какой области болит?", keyboardMarkup);
-            case 4:
+                yield createSendMessageWithKeyboard(chatId, "В какой области болит?", keyboardMarkup);
+            }
+            case 4 -> {
                 keyboardMarkup = createKeyboard(
                         createRow(
                                 createButton("Слева", "Слева"),
@@ -73,8 +74,9 @@ public class QuestionsForDiary {
                                 createButton("С 2х сторон", "С 2х сторон")
                         )
                 );
-                return createSendMessageWithKeyboard(chatId, "С какой стороны болит голова?", keyboardMarkup);
-            case 5:
+                yield createSendMessageWithKeyboard(chatId, "С какой стороны болит голова?", keyboardMarkup);
+            }
+            case 5 -> {
                 keyboardMarkup = createKeyboard(
                         createRow(
                                 createButton("Тошнота или рвота", "Тошнота или рвота")
@@ -90,8 +92,9 @@ public class QuestionsForDiary {
                         )
 
                 );
-                return createSendMessageWithKeyboard(chatId, "Имеются ли у Вас какие-либо симптомы?", keyboardMarkup);
-            case 6:
+                yield createSendMessageWithKeyboard(chatId, "Имеются ли у Вас какие-либо симптомы?", keyboardMarkup);
+            }
+            case 6 -> {
                 keyboardMarkup = createKeyboard(
                         createRow(
                                 createButton("Терплю (сон, отдых, прогулка)", "Терплю (сон, отдых, прогулка)")
@@ -101,8 +104,9 @@ public class QuestionsForDiary {
                         )
 
                 );
-                return createSendMessageWithKeyboard(chatId, "Чем снимаете приступ?", keyboardMarkup);
-            case 7:
+                yield createSendMessageWithKeyboard(chatId, "Чем снимаете приступ?", keyboardMarkup);
+            }
+            case 7 -> {
                 keyboardMarkup = createKeyboard(
                         createRow(
                                 createButton("Моноклональные антитела", "Моноклональные антитела")
@@ -122,8 +126,9 @@ public class QuestionsForDiary {
                         )
 
                 );
-                return createSendMessageWithKeyboard(chatId, "Есть ли профилактика приступов головной боли?", keyboardMarkup);
-            case 8:
+                yield createSendMessageWithKeyboard(chatId, "Есть ли профилактика приступов головной боли?", keyboardMarkup);
+            }
+            case 8 -> {
                 keyboardMarkup = createKeyboard(
                         createRow(
                                 createButton("Метопролол (беталок, эгилок)", "Метопролол (беталок, эгилок)")
@@ -142,12 +147,10 @@ public class QuestionsForDiary {
                         )
 
                 );
-                return createSendMessageWithKeyboard(chatId, "Принимаете ли Вы один из следующих препаратов?", keyboardMarkup);
-
-            default:
-                // В случае неизвестного номера вопроса возвращаем пустоту (может переделать на пустое сообщение ?)
-                return null;
-        }
+                yield createSendMessageWithKeyboard(chatId, "Принимаете ли Вы один из следующих препаратов?", keyboardMarkup);
+            }
+            default -> throw new IllegalStateException("неверный номер вопроса: " + questionNumber);
+        };
     }
     /**
      * Создает кнопку для использования в клавиатуре.
