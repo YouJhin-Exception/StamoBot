@@ -77,9 +77,11 @@ public class StamoBot extends TelegramLongPollingBot {
 
         } else if (update.hasCallbackQuery()) {
 
-            CompletableFuture.runAsync(() -> {
-                handleQuery.handleCallbackQuery(this, update.getCallbackQuery());
-            }, executor);
+            handleQuery.handleCallbackQuery(this, update.getCallbackQuery());
+
+//            CompletableFuture.runAsync(() -> {
+//                handleQuery.handleCallbackQuery(this, update.getCallbackQuery());
+//            }, executor);
 
         }
 
