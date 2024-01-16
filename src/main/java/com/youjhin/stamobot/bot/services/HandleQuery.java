@@ -4,6 +4,7 @@ import com.youjhin.stamobot.bot.StamoBot;
 import com.youjhin.stamobot.bot.questions.QuestionsForDiary;
 import com.youjhin.stamobot.bot.model.HeadDiary;
 import com.youjhin.stamobot.bot.model.HeadDiaryRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -14,21 +15,33 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Сервисный класс для обработки запросов, связанных с опросом.
  */
+@Slf4j
 @Service
 public class HandleQuery {
+
+    private static final int MAX_QUESTION_NUMBER = 7;
 
     @Autowired
     private HeadDiaryRepository diaryRepo;
 
     @Autowired
     private QuestionsForDiary questions;
-    private int currentQuestion = 1;
-    List<String> answers = new ArrayList<>();
+
+    @Autowired
+    private BotServices botServices;
+
+
+    // для каждого пользователя по уникальным chatId свои ответы и текущий вопрос
+    private final Map<Long, Integer> currentQuestions = new HashMap<>();
+    private final Map<Long, List<String>> userAnswers = new HashMap<>();
 
     /**
      * Обрабатывает callback-запрос, полученный от пользователя.
@@ -38,12 +51,22 @@ public class HandleQuery {
      */
     public void handleCallbackQuery(StamoBot bot, CallbackQuery callbackQuery) {
 
-        // Ответы собираются при нажатии кнопок
-        String callbackData = callbackQuery.getData();
-        answers.add(callbackData);
-
         Long chatId = callbackQuery.getMessage().getChatId();
-        sendNextQuestion(bot, chatId, callbackQuery.getMessage().getMessageId());
+
+        // Получаем текущий вопрос для пользователя или устанавливаем первый, если его нет
+        int currentQuestion = currentQuestions.getOrDefault(chatId, 1);
+
+        // Используем CompletableFuture для асинхронной обработки callback-запроса
+        CompletableFuture.runAsync(() -> {
+            // Ответы собираются при нажатии кнопок
+            String callbackData = callbackQuery.getData();
+
+            // Получаем список ответов пользователя или создаем новый, если его нет
+            List<String> answers = userAnswers.computeIfAbsent(chatId, k -> new ArrayList<>());
+            answers.add(callbackData);
+
+            sendNextQuestion(bot, chatId, callbackQuery.getMessage().getMessageId(), currentQuestion);
+        });
     }
 
     /**
@@ -53,12 +76,13 @@ public class HandleQuery {
      * @param chatId    Идентификатор чата.
      * @param messageId Идентификатор сообщения.
      */
-    private void sendNextQuestion(StamoBot bot, Long chatId, Integer messageId) {
+    private void sendNextQuestion(StamoBot bot, Long chatId, Integer messageId, int currentQuestion) {
         EditMessageText editMessageText;
 
-        if (currentQuestion >= 1 && currentQuestion <= 7) {
+        if (currentQuestion >= 1 && currentQuestion <= MAX_QUESTION_NUMBER) {
             // Переход к следующему вопросу и редактирование сообщения
             currentQuestion++;
+            currentQuestions.put(chatId, currentQuestion);
             editMessageText = editQuestion(chatId, messageId, questions.askQuestionByNumber(chatId, currentQuestion));
         } else {
             // Опрос завершен, отправка сообщения об окончании, сохранение опроса и сброс переменных
@@ -66,17 +90,17 @@ public class HandleQuery {
             editMessageText.setChatId(chatId);
             editMessageText.setMessageId(messageId);
             editMessageText.setText("Опрос завершен. \uD83D\uDE31");
-            currentQuestion = 1;
+            currentQuestions.remove(chatId);
 
-            saveSurvey(chatId);
+            saveSurvey(chatId, bot);
 
-            answers.clear();
+            userAnswers.remove(chatId);
         }
 
         try {
             bot.execute(editMessageText);
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            log.error("Ошибка в отправке следующего вопроса" + e.getMessage());
         }
     }
 
@@ -102,21 +126,30 @@ public class HandleQuery {
      *
      * @param chatId Идентификатор чата.
      */
-    private void saveSurvey(Long chatId) {
+    private void saveSurvey(Long chatId, StamoBot bot) {
+        List<String> answers = userAnswers.get(chatId);
 
-        HeadDiary diary = new HeadDiary();
+        if (answers != null && answers.size() == 8) {
+            HeadDiary diary = new HeadDiary();
 
-        diary.setChatId(chatId);
-        diary.setDateOfFilling(new Timestamp(System.currentTimeMillis()));
-        diary.setHowMuchHurtScale(answers.getFirst());
-        diary.setNatureHeadache(answers.get(1));
-        diary.setAreaHurt(answers.get(2));
-        diary.setWerePain(answers.get(3));
-        diary.setSymptoms(answers.get(4));
-        diary.setRelieveAttack(answers.get(5));
-        diary.setPreventionHeadache(answers.get(6));
-        diary.setTakeMedication(answers.get(7));
+            diary.setChatId(chatId);
+            diary.setDateOfFilling(new Timestamp(System.currentTimeMillis()));
+            diary.setHowMuchHurtScale(answers.get(0));
+            diary.setNatureHeadache(answers.get(1));
+            diary.setAreaHurt(answers.get(2));
+            diary.setWerePain(answers.get(3));
+            diary.setSymptoms(answers.get(4));
+            diary.setRelieveAttack(answers.get(5));
+            diary.setPreventionHeadache(answers.get(6));
+            diary.setTakeMedication(answers.get(7));
 
-        diaryRepo.save(diary);
+            diaryRepo.save(diary);
+        } else {
+            // Обработка случая, когда не все ответы получены (это может произойти, если опрос завершился раньше)
+            // Добавлено логирование и отправка уведомления
+            log.error("Не все ответы получены для сохранения опроса. ChatId: " + chatId);
+            botServices.sendMessage(bot, chatId, "Извините, не удалось сохранить опрос. Не все ответы получены. Пожалуйста, повторите опрос.");
+        }
     }
+
 }
