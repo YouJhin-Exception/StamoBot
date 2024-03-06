@@ -1,4 +1,4 @@
-package com.youjhin.stamobot.bot.services;
+package com.youjhin.stamobot.bot.model;
 
 
 import lombok.Getter;

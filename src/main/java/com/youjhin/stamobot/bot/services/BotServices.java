@@ -90,7 +90,7 @@ public class BotServices {
      * @param bot     Экземпляр бота.
      * @param message Объект SendMessage для отправки.
      */
-    public void executeMessage(StamoBot bot, SendMessage message) {
+    private void executeMessage(StamoBot bot, SendMessage message) {
         try {
             bot.execute(message);
         } catch (TelegramApiException e) {

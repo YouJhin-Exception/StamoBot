@@ -6,7 +6,7 @@ import com.youjhin.stamobot.bot.comands.StamoBotCommands;
 import com.youjhin.stamobot.bot.services.BotServices;
 import com.youjhin.stamobot.bot.services.HandleQuery;
 import com.youjhin.stamobot.bot.services.RegistrationService;
-import com.youjhin.stamobot.bot.services.UserSession;
+import com.youjhin.stamobot.bot.model.UserSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -78,14 +78,9 @@ public class StamoBot extends TelegramLongPollingBot {
         } else if (update.hasCallbackQuery()) {
 
             handleQuery.handleCallbackQuery(this, update.getCallbackQuery());
-
-//            CompletableFuture.runAsync(() -> {
-//                handleQuery.handleCallbackQuery(this, update.getCallbackQuery());
-//            }, executor);
-
         }
 
-        //log.info("Сообщение отправлено пользователю: " + update.getMessage().getChat().getFirstName());
+        log.info("Сообщение отправлено пользователю: " + update.getMessage().getChat().getFirstName());
     }
 
     // Дополнительная обработка обновлений в зависимости от текстового сообщения
@@ -105,9 +100,7 @@ public class StamoBot extends TelegramLongPollingBot {
                 }
                 case BotCommandsConstants.HEADACHE -> {
 
-                    CompletableFuture.runAsync(() -> {
-                        botServices.headacheCommand(this, update.getMessage().getChatId(), update.getMessage());
-                    }, executor);
+                    CompletableFuture.runAsync(() -> botServices.headacheCommand(this, update.getMessage().getChatId(), update.getMessage()), executor);
 
                 }
                 default -> {

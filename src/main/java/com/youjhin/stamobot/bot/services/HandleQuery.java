@@ -28,6 +28,7 @@ import java.util.concurrent.CompletableFuture;
 public class HandleQuery {
 
     private static final int MAX_QUESTION_NUMBER = 7;
+    private static final int MAX_ANSWERS_NEED = 8;
 
     @Autowired
     private HeadDiaryRepository diaryRepo;
@@ -129,7 +130,7 @@ public class HandleQuery {
     private void saveSurvey(Long chatId, StamoBot bot) {
         List<String> answers = userAnswers.get(chatId);
 
-        if (answers != null && answers.size() == 8) {
+        if (answers != null && answers.size() == MAX_ANSWERS_NEED) {
             HeadDiary diary = new HeadDiary();
 
             diary.setChatId(chatId);
