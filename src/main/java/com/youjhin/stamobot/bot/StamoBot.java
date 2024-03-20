@@ -51,7 +51,8 @@ public class StamoBot extends TelegramLongPollingBot {
      *
      * @param botToken Токен бота.
      */
-    public StamoBot(@Value("${bot.token}") String botToken, BotServices botServices, HandleQuery handleQuery, RegistrationService registrationService) {
+    public StamoBot(@Value("${bot.token}") String botToken,
+                    BotServices botServices, HandleQuery handleQuery, RegistrationService registrationService) {
         super(botToken);
         initializeMenu();
         this.botServices = botServices;
@@ -88,21 +89,15 @@ public class StamoBot extends TelegramLongPollingBot {
 
         if (update.hasMessage() && update.getMessage().hasText()) {
             switch (update.getMessage().getText()) {
-                case BotCommandsConstants.START -> {
-                    botServices.startCommand(this, update.getMessage());
-
-                }
+                case BotCommandsConstants.START -> botServices.startCommand(this, update.getMessage());
                 case BotCommandsConstants.REG -> {
                     botServices.sendMessage(this, update.getMessage().getChatId(), "Введите Ваше имя");
                     session.setWaitAnswer(true);
                     session.setRegStep(1);
 
                 }
-                case BotCommandsConstants.HEADACHE -> {
-
-                    CompletableFuture.runAsync(() -> botServices.headacheCommand(this, update.getMessage().getChatId(), update.getMessage()), executor);
-
-                }
+                case BotCommandsConstants.HEADACHE -> CompletableFuture.runAsync(() -> botServices.headacheCommand(
+                        this, update.getMessage().getChatId(), update.getMessage()), executor);
                 default -> {
                     if (session.isWaitAnswer()) {
                         // обработка ответов в процессе регистрации
