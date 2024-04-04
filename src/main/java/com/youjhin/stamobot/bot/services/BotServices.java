@@ -63,10 +63,10 @@ public class BotServices {
      */
     public void unknownCommand(StamoBot bot, Message message) {
         String answer = EmojiParser.parseToUnicode("Не удалось распознать команду! :skull:");
-        //String an2 = EmojiParser.parseToUnicode(":ghost:");
+        String an2 = EmojiParser.parseToUnicode(":ghost:");
 
         sendMessage(bot, message.getChatId(), answer);
-        //sendMessage(bot, message.getChatId(), an2);
+        sendMessage(bot, message.getChatId(), an2);
     }
 
     /**
